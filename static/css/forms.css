@@ -1,0 +1,25 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    /* width: 60%; */
+}
+
+.form-row{
+    
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.form-row label {
+    font-size: medium;
+}
+
+.form-row input, .form-row select {
+    width: 50%;
+}
+
+.form hr {
+    border-top: 1px solid rgb(17, 3, 3);
+    width: 100%;
+}
