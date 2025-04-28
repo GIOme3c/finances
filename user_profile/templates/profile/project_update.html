@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>
+        {% if 'create' in request.get_full_path %}
+            Новая запись в история расходов
+        {% elif 'update' in request.get_full_path %}  
+            Изменить запись в истории расходов 
+        {% endif %}
+    </h1>
+    <form method="post" class="form">
+        {% csrf_token %}
+
+        <div class="form-row">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+        </div>
+        <hr>
+
+        <div class="form-row">
+            {{ form.members.label_tag }}
+            {{ form.members }}
+        </div>
+        <hr>
+
+        <button type="submit" class="btn btn-success">Подтвердить</button>
+    </form>
+{% endblock %}

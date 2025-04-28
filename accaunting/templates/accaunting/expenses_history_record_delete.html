@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h1>Удаление записи о расходах</h1>
+<table class="table table-striped">
+    <thead>
+        <th>Дата</th>
+        <th>Сумма</th>
+        <th>Категория</th>
+        <th>Подкатегория</th>
+        <th>Счёт</th>
+        <th>Описание</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ object.date|date:'d.m.Y' }}</td>
+            <td>{{ object.value }}</td>
+            <td>{{ object.category }}</td>
+            <td>{{ object.subcategory }}</td>
+            <td>{{ object.wallet }}</td>
+            <td>{{ object.comment }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="delete-buttons-container">
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <button type="reset" class="btn btn-warning" onClick="javascript:history.go(-1);">Назад</button>
+    </div>
+
+</form>
+
+{% endblock %}

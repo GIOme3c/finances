@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% load material_icons %}
+
+{% block content %}
+    <h1>Список расходов</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <th>Дата</th>
+            <th>Сумма</th>
+            <th>Категория</th>
+            <th>Подкатегория</th>
+            <th>Счёт</th>
+            <th>Описание</th>
+            <th>Действия</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="7">
+                    <div class="d-flex justify-content-center">
+                        {% url 'expenses-create' as create_url%}
+                        {% material_icon_button  'add' 'btn-success' create_url %}
+                    </div>
+                </td>
+            </tr>
+            {% for object in object_list %}
+                <tr>
+                    <td>{{ object.date|date:'d.m.Y' }}</td>
+                    <td>{{ object.value }}</td>
+                    <td>{{ object.category }}</td>
+                    <td>{{ object.subcategory }}</td>
+                    <td>{{ object.wallet }}</td>
+                    <td>{{ object.comment }}</td>
+                    <td>
+                        <div class="d-flex flex-row">
+                            {% url 'expenses-update' object.pk  as update_url%}
+                            {% material_icon_button  'edit' 'btn-success me-1' update_url %}
+
+                            {% url 'expenses-delete' object.pk as delete_url%}
+                            {% material_icon_button  'delete' 'btn-danger' delete_url %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex align-items-center justify-content-center gap-3">
+        
+        {% if page_obj.has_previous %}
+            {% with prev_url="?page="|add:page_obj.previous_page_number %}
+                {% material_icon_button  'arrow_back_ios' 'btn-success' prev_url %}
+            {% endwith %}
+        {% else %}
+            {% material_icon_button  'arrow_back_ios' 'btn-success' %}
+        {% endif %}
+
+        <span class="px-3 py-1 bg-light rounded-2 border"> {{page_obj.number}} </span>
+        
+        {% if page_obj.has_next %}
+            {% with next_url="?page="|add:page_obj.next_page_number %}
+                {% material_icon_button  'arrow_forward_ios' 'btn-success' next_url %}
+            {% endwith %}
+        {% else %}
+            {% material_icon_button  'arrow_forward_ios' 'btn-success' %}
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends "layout.html" %}
+{% load static %}
+
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
+    <script src="{% static 'js/flatpickr.min.js' %}"></script>
+    <script src="{% static 'js/flatpickr-ru.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+    <h1>
+        {% if 'create' in request.get_full_path %}
+            Новая запись в история расходов
+        {% elif 'update' in request.get_full_path %}  
+            Изменить запись в истории расходов 
+        {% endif %}
+    </h1>
+    <form method="post" class="form">
+        {% csrf_token %}
+
+        <div class="form-row">
+            {{ form.date.label_tag }}
+            {{ form.date }}
+        </div>
+        <hr>
+
+        <div class="form-row">
+            {{ form.value.label_tag }}
+            {{ form.value }}
+        </div>
+        <hr>
+
+        <div class="form-row">
+            {{ form.category.label_tag }}
+            <div class="select-button-wrapper">
+                {{ form.category }}
+                <button type="reset" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Добавить</button>
+            </div>
+        </div>
+        <hr>
+
+        <div class="form-row">
+            {{ form.subcategory.label_tag }}
+            <div class="select-button-wrapper">
+                {{ form.subcategory }}
+                <button type="reset" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">Добавить</button>
+            </div>
+        </div>
+        <hr>
+
+        <div class="form-row">
+            {{ form.wallet.label_tag }}
+            {{ form.wallet }}
+        </div>
+        <hr>
+
+        <div class="form-row">
+            {{ form.comment.label_tag }}
+            {{ form.comment }}
+        </div>
+        <hr>
+
+        <button type="submit" class="btn btn-success">Подтвердить</button>
+    </form>
+
+    <!-- Модальные окна -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить новую категорию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCategoryForm">
+                        {% csrf_token %}
+                        <input type="text" name="name" class="form-control" placeholder="Название категории" required>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" onclick="addCategory()">Добавить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить новую подкатегорию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSubcategoryForm">
+                        {% csrf_token %}
+                        <select id="category_select_modal" name="category" class="form-select mb-2" required>
+                            <option value="">Выберите категорию</option>
+                            {% for category in form.category.field.queryset %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="name" class="form-control" placeholder="Название подкатегории" required>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" onclick="addSubcategory()">Добавить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            flatpickr("[data-datepicker]", {
+                dateFormat: "d.m.Y",
+                locale: "ru",
+                allowInput: false
+            });
+        });
+        const date_field = document.getElementById('id_date')
+    </script>
+
+    <script>
+        function addCategory() {
+            const form = document.getElementById('addCategoryForm');
+            const formData = new FormData(form);
+            
+            fetch("{% url 'category-create-modal' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Добавляем новую категорию в select
+                    const select = document.getElementById('id_category');
+                    const option = new Option(data.name, data.id, true, true);
+                    select.add(option);
+                    
+                    const select_modal = document.getElementById('category_select_modal');
+                    const option_modal = new Option(data.name, data.id);
+                    select_modal.add(option_modal);
+                    
+                    // Закрываем модальное окно
+                    bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
+                    
+                    // Очищаем форму
+                    form.reset();
+                } else {
+                    alert(data.error || 'Ошибка при добавлении категории');
+                }
+            });
+        }
+    
+        function addSubcategory() {
+            const form = document.getElementById('addSubcategoryForm');
+            const formData = new FormData(form);
+            
+            fetch("{% url 'subcategory-create-modal' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Добавляем новую подкатегорию в select
+                    const select = document.getElementById('id_subcategory');
+                    const option = new Option(data.name, data.id, true, true);
+                    select.add(option);
+                    
+                    // Закрываем модальное окно
+                    bootstrap.Modal.getInstance(document.getElementById('addSubcategoryModal')).hide();
+                    
+                    // Очищаем форму
+                    form.reset();
+                } else {
+                    alert(data.error || 'Ошибка при добавлении подкатегории');
+                }
+            });
+        }
+    </script>
+{% endblock %}

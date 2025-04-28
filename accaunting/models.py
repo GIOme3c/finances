@@ -1,9 +1,15 @@
 from django.db import models
 
+from user_profile.models import Project
+from user_profile.mixins import (
+    ProjectRelatedMixin,
+    DeactivatedMixin,
+)
 
-class IncomeCategory(models.Model):
-    name = models.CharField("Название", max_length=64, unique=True)
-    is_active = models.BooleanField("Актуальная", default=True)
+
+class IncomeCategory(DeactivatedMixin):
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    name = models.CharField("Название", max_length=64)
 
     def __str__(self):
         return self.name
@@ -11,11 +17,12 @@ class IncomeCategory(models.Model):
     class Meta:
         verbose_name = "Категория дохода"
         verbose_name_plural = "Категории доходов"
+        unique_together = (("project", "name"),)
 
 
-class ExpensesCategory(models.Model):
-    name = models.CharField("Название", max_length=64, unique=True)
-    is_active = models.BooleanField("Актуальная", default=True)
+class ExpensesCategory(DeactivatedMixin):
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    name = models.CharField("Название", max_length=64)
 
     def __str__(self):
         return self.name
@@ -23,27 +30,28 @@ class ExpensesCategory(models.Model):
     class Meta:
         verbose_name = "Категория трат"
         verbose_name_plural = "Категории трат"
+        unique_together = (("project", "name"),)
 
 
-class ExpensesSubCategory(models.Model):
-    category = models.ForeignKey(ExpensesCategory, on_delete=models.CASCADE)
+class ExpensesSubCategory(DeactivatedMixin):
     name = models.CharField("Название", max_length=64)
-    is_active = models.BooleanField("Актуальная", default=True)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    category = models.ForeignKey(ExpensesCategory, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        unique_together = (("category", "name"),)
+        unique_together = (("category", "name", "project"),)
         verbose_name = "Подкатегория трат"
         verbose_name_plural = "Подкатегории трат"
 
 
-class Wallet(models.Model):
-    name = models.CharField("Название", max_length=64)
+class Wallet(DeactivatedMixin):
     current_value = models.DecimalField("Текущий остаток", max_digits=15, decimal_places=2, default=0)
     is_keeping = models.BooleanField("Накопительный", default=False)
-    is_active = models.BooleanField("Актуальный", default=True)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    name = models.CharField("Название", max_length=64)
 
     def __str__(self):
         return self.name
@@ -51,9 +59,10 @@ class Wallet(models.Model):
     class Meta:
         verbose_name = "Cчёт"
         verbose_name_plural = "Cчёта"
+        unique_together = (("project", "name"),)
 
 
-class ExpensesHistory(models.Model):
+class ExpensesHistory(ProjectRelatedMixin):
     date = models.DateField("Дата")
     value = models.DecimalField("Сумма", max_digits=15, decimal_places=2)
     category = models.ForeignKey(ExpensesCategory, on_delete=models.PROTECT, verbose_name='Категория')
@@ -69,7 +78,7 @@ class ExpensesHistory(models.Model):
         verbose_name_plural = "История трат"
 
 
-class IncomeHistory(models.Model):
+class IncomeHistory(ProjectRelatedMixin):
     date = models.DateField("Дата")
     value = models.DecimalField("Сумма", max_digits=15, decimal_places=2)
     category = models.ForeignKey(IncomeCategory, on_delete=models.PROTECT)
@@ -84,7 +93,7 @@ class IncomeHistory(models.Model):
         verbose_name_plural = "История доходов"
 
 
-class TransactionsHistory(models.Model):
+class TransactionsHistory(ProjectRelatedMixin):
     date = models.DateField("Дата")
     value = models.DecimalField("Сумма", max_digits=15, decimal_places=2)
     source = models.ForeignKey(Wallet, related_name="trans_sourse", on_delete=models.PROTECT)
@@ -99,16 +108,18 @@ class TransactionsHistory(models.Model):
         verbose_name_plural = "История переводов"
 
 
-class Credit(models.Model):
-    name = models.CharField("Название", max_length=64)
+class Credit(DeactivatedMixin):
     credit_sum = models.DecimalField("Сумма", max_digits=15, decimal_places=2)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    name = models.CharField("Название", max_length=64)
 
     class Meta:
         verbose_name = "Кредит"
         verbose_name_plural = "Кредиты"
+        unique_together = (("project", "name"),)
 
 
-class CreditHistory(models.Model):
+class CreditHistory(ProjectRelatedMixin):
     credit = models.ForeignKey(Credit, on_delete=models.PROTECT)
     date = models.DateField("Дата")
     value = models.DecimalField("Сумма", max_digits=15, decimal_places=2)
@@ -119,12 +130,15 @@ class CreditHistory(models.Model):
         verbose_name_plural = "История оплаты кредитов"
 
 
-class Planes(models.Model):
+class Planes(ProjectRelatedMixin):
     year = models.PositiveIntegerField("Год")
     month = models.PositiveIntegerField("Месяц")
     category = models.ForeignKey(ExpensesCategory, on_delete=models.PROTECT)
     value = models.DecimalField("Сумма", max_digits=15, decimal_places=2)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = "План расходов"
         verbose_name_plural = "Планы расходов"
+        unique_together = (("year", "month", "category", "project"),)
+

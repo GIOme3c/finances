@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/forms.css' %}">
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <link rel="stylesheet" href="{% static 'css/material_icons.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+
+    {% block head %}{% endblock %}
     <title>Финансы</title>
 </head>
 <body>
@@ -14,4 +20,6 @@
         {% block content %}{% endblock %}
     </div>
 </body>
+
+{% block scripts %}{% endblock %}
 </html>
