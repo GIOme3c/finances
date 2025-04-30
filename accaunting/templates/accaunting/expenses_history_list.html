@@ -18,7 +18,7 @@
             <tr>
                 <td colspan="7">
                     <div class="d-flex justify-content-center">
-                        {% url 'expenses-create' as create_url%}
+                        {% url 'expenses-create' pr_pk=pr_pk as create_url%}
                         {% material_icon_button  'add' 'btn-success' create_url %}
                     </div>
                 </td>
@@ -33,10 +33,10 @@
                     <td>{{ object.comment }}</td>
                     <td>
                         <div class="d-flex flex-row">
-                            {% url 'expenses-update' object.pk  as update_url%}
+                            {% url 'expenses-update' pk=object.pk pr_pk=pr_pk as update_url%}
                             {% material_icon_button  'edit' 'btn-success me-1' update_url %}
 
-                            {% url 'expenses-delete' object.pk as delete_url%}
+                            {% url 'expenses-delete' pk=object.pk pr_pk=pr_pk as delete_url%}
                             {% material_icon_button  'delete' 'btn-danger' delete_url %}
                         </div>
                     </td>

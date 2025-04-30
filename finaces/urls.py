@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('profile/', include('user_profile.urls')),
     path('accaunting/', include('accaunting.urls')),
-    path('', lambda r: redirect('user_profile'))
+    path('', lambda r: redirect('profile'))
 ]

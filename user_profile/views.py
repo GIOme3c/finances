@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 
 from user_profile.models import Project
+from accaunting import models as acc_models
 
 
 
@@ -31,6 +32,8 @@ def user_profile(request):
         context = {
             "projects": profile.all_projects
         }
+        print(context["projects"][0].members.all())
+        print(context["projects"][0].name)
         return render(request, 'profile/profile.html', context)
     else:
         return redirect('login')
@@ -58,16 +61,26 @@ class ProjectUpdateView(UpdateView):
     template_name = "profile/project_update.html"
     success_url = reverse_lazy('profile')
 
-    # def get_form(self, form_class=None):
-    #     form = super().get_form(form_class)
-    #     form.fields['date'].widget = DateInput(
-    #         attrs={
-    #             'type': 'date',
-    #             'class': 'form-control',
-    #             'data-datepicker': ''
-    #         }
-    #     )
-    #     form.fields['comment'].widget = TextInput(
-    #         attrs={'class': 'form-control', 'placeholder': 'Введите комментарий'}
-    #     )
-    #     return form
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['members'].queryset = form.fields['members'].queryset.exclude(id=self.request.user.profile.id)
+        return form
+    
+
+class ProjectDeleteView(DeleteView):
+    model = Project
+    template_name = "profile/project_delete.html"
+    success_url = reverse_lazy('profile')
+
+
+class ProjectDetailView(DetailView):
+    model = Project
+    template_name = "profile/project_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project = kwargs["object"]
+        context["expenses"] = acc_models.ExpensesHistory.objects.filter(project=project)[:10]
+        context["income"] = acc_models.IncomeHistory.objects.filter(project=project)[:10]
+        return context
+    

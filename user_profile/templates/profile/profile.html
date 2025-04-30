@@ -2,19 +2,48 @@
 {% load material_icons %}
 
 {% block content %}
-    <h2>{{ user.username }}</h2>
+    <h2>Профиль {{ user.username }}</h2>
 
-    <div class="d-flex justify-content-center">
-        {% url 'project-create' as create_project%}
-        {% material_icon_button  'add' 'btn-success' create_project %}
-    </div>
+    <table class="table table-striped">
+        <thead>
+            <th>Название</th>
+            <th>Создатель</th>
+            <th>Участники</th>
+            <th>Действия</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="4">
+                    <div class="d-flex justify-content-center">
+                        {% url 'project-create' as create_project%}
+                        {% material_icon_button  'add' 'btn-success' create_project %}
+                    </div>
+                </td>
+            </tr>
+            {% for project in projects %}
+                <tr style="cursor: pointer;" 
+                    onclick="window.location.href=`{% url 'project-detail' project.pk %}`;"
+                    onmouseover="this.style.backgroundColor='#f5f5f5';" 
+                    onmouseout="this.style.backgroundColor='';"
+                >
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.owner }}</td>
+                    <td>
+                        {{ project.members_to_string }}
+                    </td>
+                    <td>
+                        <div class="d-flex flex-row">
+                            {% url 'project-update' project.pk  as update_url %}
+                            {% material_icon_button  'edit' 'btn-success me-1' update_url %}
 
-    <div class="d-flex flex-column">
-        {% for project in  projects %}
-            <button class="btn btn-info"> {{ project.project.name }}</button>
-            
-        {% endfor %}
-    </div>
+                            {% url 'project-delete' project.pk as delete_url %}
+                            {% material_icon_button  'delete' 'btn-danger' delete_url %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     
 
 {% endblock %}

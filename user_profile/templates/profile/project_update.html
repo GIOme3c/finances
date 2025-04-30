@@ -3,9 +3,9 @@
 {% block content %}
     <h1>
         {% if 'create' in request.get_full_path %}
-            Новая запись в история расходов
+            Создать проект
         {% elif 'update' in request.get_full_path %}  
-            Изменить запись в истории расходов 
+            Изменить проект
         {% endif %}
     </h1>
     <form method="post" class="form">

@@ -6,3 +6,7 @@ body {
 .content {
     padding-top: 30px;
 }
+
+header {
+    width: 100%;
+}

@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h1>Удаление проекта</h1>
+<table class="table table-striped">
+    <thead>
+        <th>Название</th>
+        <th>Создатель</th>
+        <th>Участники</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ object.name }}</td>
+            <td>{{ object.owner }}</td>
+            <td>{{ object.members }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="delete-buttons-container">
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <button type="reset" class="btn btn-warning" onClick="javascript:history.go(-1);">Назад</button>
+    </div>
+
+</form>
+
+{% endblock %}

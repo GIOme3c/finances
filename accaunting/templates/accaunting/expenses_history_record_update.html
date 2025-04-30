@@ -23,6 +23,7 @@
         <div class="form-row">
             {{ form.date.label_tag }}
             {{ form.date }}
+            {{ form.date.value }}
         </div>
         <hr>
 
@@ -113,7 +114,6 @@
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block scripts %}
@@ -124,8 +124,59 @@
                 locale: "ru",
                 allowInput: false
             });
-        });
-        const date_field = document.getElementById('id_date')
+        
+            const date_field = document.getElementById('id_date')
+
+
+            {% comment %} // Получаем элементы select
+            const categorySelect = document.getElementById('id_category');
+            const subcategorySelect = document.getElementById('id_subcategory');
+            
+            // Обработчик изменения категории
+            categorySelect.addEventListener('change', function() {
+                const selectedCategoryId = this.value;
+                
+                // Очищаем подкатегории
+                subcategorySelect.innerHTML = '<option value="">---------</option>';
+                
+                if (selectedCategoryId) {
+                    // Загружаем подкатегории для выбранной категории
+                    fetch(`/api/subcategories/?category_id=${selectedCategoryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(subcategory => {
+                                const option = new Option(subcategory.name, subcategory.id);
+                                subcategorySelect.add(option);
+                            });
+                        });
+                }
+            });
+            
+            // Обработчик изменения подкатегории
+            subcategorySelect.addEventListener('change', function() {
+                const selectedSubcategoryId = this.value;
+                
+                if (selectedSubcategoryId) {
+                    // Получаем категорию для выбранной подкатегории
+                    fetch(`/api/subcategory/${selectedSubcategoryId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Устанавливаем соответствующую категорию
+                            categorySelect.value = data.category_id;
+                            
+                            // Обновляем список подкатегорий для выбранной категории
+                            const event = new Event('change');
+                            categorySelect.dispatchEvent(event);
+                        });
+                }
+            });
+            
+            // Инициализируем список подкатегорий при загрузке, если категория уже выбрана
+            if (categorySelect.value) {
+                const event = new Event('change');
+                categorySelect.dispatchEvent(event);
+            }
+        }); {% endcomment %}
     </script>
 
     <script>
@@ -133,7 +184,7 @@
             const form = document.getElementById('addCategoryForm');
             const formData = new FormData(form);
             
-            fetch("{% url 'category-create-modal' %}", {
+            fetch("{% url 'category-create-modal' pr_pk=pr_pk %}", {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -168,7 +219,7 @@
             const form = document.getElementById('addSubcategoryForm');
             const formData = new FormData(form);
             
-            fetch("{% url 'subcategory-create-modal' %}", {
+            fetch("{% url 'subcategory-create-modal' pr_pk=pr_pk %}", {
                 method: 'POST',
                 body: formData,
                 headers: {
