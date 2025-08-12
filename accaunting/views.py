@@ -2,23 +2,33 @@ from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.views import View
 from django.forms import DateInput, TextInput
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from accaunting.forms import ExpensesCategoryModelForm, ExpensesSubCategoryModelForm
 from accaunting.models import ExpensesHistory
 
+from user_profile import models as up_models
 
 
 class ExpensesHistoryRecordCreateView(CreateView):
     model = ExpensesHistory
-    fields = "__all__"
+    fields = [
+        "date",
+        "value",
+        "category",
+        "subcategory",
+        "wallet",
+        "comment",
+    ]
     template_name = "accaunting/expenses_history_record_update.html"
-    # success_url = reverse_lazy('expenses-list')
 
-    def post(self, request, *args, **kwargs):
-        self.success_url = reverse_lazy('expenses-list', kwargs['pr_pk'])
-        print(self.success_url)
-        return super().post(request, *args, **kwargs)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = ExpensesHistory(project_id=self.kwargs["pr_pk"])
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('expenses-list', kwargs=self.kwargs)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -33,11 +43,7 @@ class ExpensesHistoryRecordCreateView(CreateView):
             attrs={'class': 'form-control', 'placeholder': 'Введите комментарий'}
         )
         return form
-    
-    def form_valid(self, form):
-        form.instance.project = self.kwargs["pr_pk"]
-        return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["pr_pk"] = self.kwargs["pr_pk"]
@@ -48,13 +54,16 @@ class ExpensesHistoryRecordUpdateView(UpdateView):
     model = ExpensesHistory
     fields = "__all__"
     template_name = "accaunting/expenses_history_record_update.html"
-    success_url = reverse_lazy('expenses-list')
+
+    def get_success_url(self):
+        return reverse('expenses-list', kwargs=self.kwargs)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields['date'].widget = DateInput(
             attrs={
-                'type': 'date',
+                # 'type': 'date',
+                'type': 'text',
                 'class': 'form-control',
                 'data-datepicker': '',
             }
@@ -63,11 +72,7 @@ class ExpensesHistoryRecordUpdateView(UpdateView):
             attrs={'class': 'form-control', 'placeholder': 'Введите комментарий'}
         )
         return form
-    
-    def form_valid(self, form):
-        form.instance.project = self.kwargs["pr_pk"]
-        return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["pr_pk"] = self.kwargs["pr_pk"]

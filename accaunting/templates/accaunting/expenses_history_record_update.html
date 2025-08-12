@@ -23,7 +23,7 @@
         <div class="form-row">
             {{ form.date.label_tag }}
             {{ form.date }}
-            {{ form.date.value }}
+            <!-- {{ form.date.value }} -->
         </div>
         <hr>
 
@@ -37,7 +37,7 @@
             {{ form.category.label_tag }}
             <div class="select-button-wrapper">
                 {{ form.category }}
-                <button type="reset" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Добавить</button>
+                <button type="button" onclick="event.preventDefault()" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Добавить</button>
             </div>
         </div>
         <hr>
@@ -46,7 +46,7 @@
             {{ form.subcategory.label_tag }}
             <div class="select-button-wrapper">
                 {{ form.subcategory }}
-                <button type="reset" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">Добавить</button>
+                <button type="button" onclick="event.preventDefault()" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">Добавить</button>
             </div>
         </div>
         <hr>
@@ -119,13 +119,13 @@
 {% block scripts %}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            const dateField = document.getElementById('id_date');
+        
             flatpickr("[data-datepicker]", {
                 dateFormat: "d.m.Y",
                 locale: "ru",
-                allowInput: false
+                allowInput: false,
             });
-        
-            const date_field = document.getElementById('id_date')
 
 
             {% comment %} // Получаем элементы select
@@ -175,8 +175,8 @@
             if (categorySelect.value) {
                 const event = new Event('change');
                 categorySelect.dispatchEvent(event);
-            }
-        }); {% endcomment %}
+            }{% endcomment %}
+        }); 
     </script>
 
     <script>
