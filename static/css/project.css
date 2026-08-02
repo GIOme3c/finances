@@ -1,0 +1,481 @@
+/* Project detail hub */
+
+body.page-app .content.content-wide {
+    max-width: 960px;
+}
+
+.project-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.project-hero-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+    border-radius: 14px;
+    font-family: var(--font-brand);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    background:
+        radial-gradient(circle at 30% 25%, rgba(228, 180, 90, 0.2), transparent 60%),
+        var(--color-surface-solid);
+    border: 1px solid var(--color-border);
+}
+
+.project-meta {
+    margin: 0.45rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.project-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.project-stat {
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+
+.project-stat-label {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.project-stat-value {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-brand);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.project-stat-value.is-positive {
+    color: var(--color-positive);
+}
+
+.project-stat-value.is-negative {
+    color: var(--color-error);
+}
+
+.project-wallets-panel {
+    margin-bottom: 1.5rem;
+}
+
+.project-period-panel {
+    margin-bottom: 1.5rem;
+}
+
+.project-period-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.85rem;
+}
+
+.project-period-head .app-panel-title {
+    margin: 0;
+}
+
+.project-period-summary {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.project-period-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.project-period-tab {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.1rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        background var(--transition-fast);
+}
+
+.project-period-tab:hover {
+    color: var(--color-text);
+    border-color: rgba(228, 180, 90, 0.35);
+    text-decoration: none;
+}
+
+.project-period-tab.is-active {
+    color: var(--color-accent-ink);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.project-period-extras {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem 1rem;
+    margin-top: 0.95rem;
+    padding-top: 0.95rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.project-period-field {
+    margin: 0;
+    min-width: 10rem;
+}
+
+.project-period-field input[type="month"],
+.project-period-field input[type="text"] {
+    width: 100%;
+    min-height: 2.4rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+}
+
+.project-period-field input[type="month"]:focus,
+.project-period-field input[type="text"]:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+}
+
+.project-transfers-panel {
+    margin-bottom: 1.5rem;
+}
+
+.project-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.project-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.project-section-head .app-panel-title {
+    margin: 0;
+}
+
+.project-section-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.project-section-actions .app-btn-ghost {
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0.3rem;
+}
+
+.project-section-actions .app-btn-ghost .material-icons {
+    font-size: 1.1rem;
+}
+
+.project-feed {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.project-feed-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 0.75rem;
+    align-items: start;
+    padding: 0.7rem 0.8rem;
+    border-radius: var(--radius-sm);
+    background: rgba(11, 15, 20, 0.4);
+    border: 1px solid transparent;
+}
+
+.project-feed-title {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 500;
+}
+
+.project-feed-sub {
+    margin: 0.15rem 0 0;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+.project-feed-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+}
+
+.project-feed-amount {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.project-feed-amount.is-positive {
+    color: var(--color-positive);
+}
+
+.project-feed-amount.is-negative {
+    color: var(--color-error);
+}
+
+.project-feed-date {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-align: right;
+}
+
+.project-feed-actions {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.project-feed-actions .app-btn-ghost {
+    min-width: 1.85rem;
+    min-height: 1.85rem;
+    padding: 0.25rem;
+}
+
+.project-feed-actions .app-btn-ghost .material-icons {
+    font-size: 1rem;
+}
+
+@media (max-width: 560px) {
+    .project-feed-item {
+        grid-template-columns: 1fr;
+    }
+
+    .project-feed-side {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .project-feed-amount {
+        text-align: left;
+    }
+}
+
+.project-empty-note {
+    margin: 0;
+    padding: 0.85rem 0.2rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.expense-drill {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.expense-drill-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.expense-drill-children {
+    margin-top: 0.45rem;
+    padding-left: 0.85rem;
+    border-left: 1px solid rgba(232, 237, 242, 0.08);
+}
+
+.expense-drill-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: rgba(11, 15, 20, 0.4);
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition:
+        border-color var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.expense-drill-item:hover {
+    border-color: rgba(228, 180, 90, 0.25);
+    background: rgba(26, 34, 45, 0.75);
+}
+
+.expense-drill-item.is-open {
+    border-color: rgba(228, 180, 90, 0.2);
+}
+
+.expense-drill-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.expense-drill-item-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.expense-drill-chevron {
+    font-size: 1.15rem;
+    color: var(--color-text-muted);
+    transition: transform var(--transition-fast);
+}
+
+.expense-drill-item.is-open .expense-drill-chevron {
+    transform: rotate(90deg);
+    color: var(--color-accent);
+}
+
+.expense-drill-item-meta {
+    margin-left: 1.35rem;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+.expense-drill-item-amount {
+    flex-shrink: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.expense-drill-item-amount.is-negative {
+    color: var(--color-error);
+}
+
+.expense-drill-item-amount.is-positive {
+    color: var(--color-positive);
+}
+
+.expense-drill-expense {
+    list-style: none;
+}
+
+.expense-drill-hint {
+    margin: 0.65rem 0 0;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+.project-wallets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.65rem;
+}
+
+.project-wallet {
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: rgba(11, 15, 20, 0.4);
+}
+
+.project-wallet-name {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.project-wallet-value {
+    margin: 0.3rem 0 0;
+    font-family: var(--font-brand);
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.project-wallet-tag {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+}
+
+.project-delete-card {
+    max-width: 480px;
+}
+
+.project-delete-card .project-meta {
+    margin-bottom: 0.75rem;
+}
+
+.project-delete-card .app-page-lead {
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 720px) {
+    .project-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .project-layout {
+        grid-template-columns: 1fr;
+    }
+}

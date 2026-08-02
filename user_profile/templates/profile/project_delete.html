@@ -1,31 +1,48 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Удалить проект — Финансы{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/project.css' %}">
+{% endblock %}
+
+{% block body_class %}page-app{% endblock %}
 
 {% block content %}
+<div class="app-page">
+    <a href="{% url 'project-detail' object.pk %}" class="app-back">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        Назад к проекту
+    </a>
 
-<h1>Удаление проекта</h1>
-<table class="table table-striped">
-    <thead>
-        <th>Название</th>
-        <th>Создатель</th>
-        <th>Участники</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{ object.name }}</td>
-            <td>{{ object.owner }}</td>
-            <td>{{ object.members }}</td>
-        </tr>
-    </tbody>
-</table>
+    <div class="app-panel project-delete-card">
+        <h1 class="app-page-title">Удалить проект?</h1>
+        <p class="project-meta">
+            <strong>{{ object.name }}</strong>
+            · {{ object.owner }}
+            {% with members=object.members.all %}
+                {% if members %}
+                    ·
+                    {% for member in members %}
+                        {{ member.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </p>
+        <p class="app-page-lead">
+            Это действие нельзя отменить. Записи, связанные с проектом, могут помешать удалению.
+        </p>
 
-<form method="post">
-    {% csrf_token %}
-
-    <div class="delete-buttons-container">
-        <button type="submit" class="btn btn-danger">Удалить</button>
-        <button type="button" class="btn btn-warning" onClick="javascript:history.go(-1);">Назад</button>
+        <form method="post">
+            {% csrf_token %}
+            <div class="app-form-actions">
+                <button type="submit" class="app-btn app-btn-danger-solid">Удалить</button>
+                <a href="{% url 'project-detail' object.pk %}" class="app-btn app-btn-ghost app-btn-ghost-label">
+                    Отмена
+                </a>
+            </div>
+        </form>
     </div>
-
-</form>
-
+</div>
 {% endblock %}

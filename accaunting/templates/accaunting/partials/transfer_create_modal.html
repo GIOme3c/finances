@@ -1,0 +1,76 @@
+{% load static %}
+{# Expects: transfer_form, pr_pk #}
+
+<link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/expenses.css' %}">
+<script src="{% static 'js/flatpickr.min.js' %}"></script>
+<script src="{% static 'js/flatpickr-ru.js' %}"></script>
+
+<div
+    class="modal fade"
+    id="transferCreateModal"
+    tabindex="-1"
+    aria-labelledby="transferCreateModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transferCreateModalLabel">Новый перевод</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <form
+                id="transferCreateForm"
+                method="post"
+                action="{% url 'transfers-create' pr_pk=pr_pk %}"
+                class="app-form expense-modal-form"
+                novalidate
+            >
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div id="transferCreateFormErrors" class="app-error-list" hidden></div>
+
+                    <div class="app-field">
+                        <label for="{{ transfer_form.date.id_for_label }}">{{ transfer_form.date.label }}</label>
+                        {{ transfer_form.date }}
+                        <p class="app-field-error-text" data-field-error="date" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ transfer_form.value.id_for_label }}">{{ transfer_form.value.label }}</label>
+                        {{ transfer_form.value }}
+                        <p class="app-field-error-text" data-field-error="value" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ transfer_form.source.id_for_label }}">{{ transfer_form.source.label }}</label>
+                        {{ transfer_form.source }}
+                        <p class="app-field-error-text" data-field-error="source" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ transfer_form.aim.id_for_label }}">{{ transfer_form.aim.label }}</label>
+                        {{ transfer_form.aim }}
+                        <p class="app-field-error-text" data-field-error="aim" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ transfer_form.comment.id_for_label }}">{{ transfer_form.comment.label }}</label>
+                        {{ transfer_form.comment }}
+                        <p class="app-field-error-text" data-field-error="comment" hidden></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="app-btn app-btn-ghost app-btn-ghost-label" data-bs-dismiss="modal">
+                        Отмена
+                    </button>
+                    <button type="submit" class="app-btn app-btn-primary" id="transferCreateSubmit">
+                        Перевести
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/transfer_create_modal.js' %}" defer></script>

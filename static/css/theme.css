@@ -1,0 +1,64 @@
+:root {
+    --color-bg: #0b0f14;
+    --color-bg-elevated: #141a22;
+    --color-surface: rgba(26, 34, 45, 0.72);
+    --color-surface-solid: #1a222d;
+    --color-border: rgba(232, 237, 242, 0.08);
+    --color-border-focus: rgba(228, 180, 90, 0.55);
+    --color-text: #e8edf2;
+    --color-text-muted: #8b97a8;
+    --color-accent: #e4b45a;
+    --color-accent-hover: #edc56f;
+    --color-accent-ink: #1a1408;
+    --color-error: #e07a6f;
+    --color-error-bg: rgba(224, 122, 111, 0.12);
+    --color-positive: #7cbc8e;
+    --color-positive-bg: rgba(124, 188, 142, 0.12);
+
+    --font-brand: "Unbounded", system-ui, sans-serif;
+    --font-ui: "Onest", system-ui, sans-serif;
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --shadow-surface: 0 24px 48px rgba(0, 0, 0, 0.35);
+    --transition-fast: 160ms ease;
+    --transition-med: 320ms ease;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    color-scheme: dark;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-accent-hover);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}

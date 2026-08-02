@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% block title %}Удалить расход — {{ project.name }}{% endblock %}
+{% block title %}Удалить перевод — {{ project.name }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/expenses.css' %}">
@@ -11,27 +11,27 @@
 
 {% block content %}
 <div class="app-page">
-    <a href="{% url 'expenses-list' pr_pk=pr_pk %}" class="app-back">
+    <a href="{% url 'transfers-list' pr_pk=pr_pk %}" class="app-back">
         <span class="material-icons" aria-hidden="true">arrow_back</span>
-        К расходам
+        К переводам
     </a>
 
     <div class="app-panel expenses-delete-card">
-        <h1 class="app-page-title">Удалить расход?</h1>
+        <h1 class="app-page-title">Удалить перевод?</h1>
         <p class="expenses-delete-summary">
-            <strong>−{{ object.value }}</strong>
-            · {{ object.category }}{% if object.subcategory %} · {{ object.subcategory }}{% endif %}
+            <strong>{{ object.value }}</strong>
+            · {{ object.source }} → {{ object.aim }}
             · {{ object.date|date:"d.m.Y" }}
         </p>
-        <p class="app-page-lead">
-            {{ object.wallet }}{% if object.comment %} · {{ object.comment }}{% endif %}
-        </p>
+        {% if object.comment %}
+        <p class="app-page-lead">{{ object.comment }}</p>
+        {% endif %}
 
         <form method="post">
             {% csrf_token %}
             <div class="app-form-actions">
                 <button type="submit" class="app-btn app-btn-danger-solid">Удалить</button>
-                <a href="{% url 'expenses-list' pr_pk=pr_pk %}" class="app-btn app-btn-ghost app-btn-ghost-label">Отмена</a>
+                <a href="{% url 'transfers-list' pr_pk=pr_pk %}" class="app-btn app-btn-ghost app-btn-ghost-label">Отмена</a>
             </div>
         </form>
     </div>

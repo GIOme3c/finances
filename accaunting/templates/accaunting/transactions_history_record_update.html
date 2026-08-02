@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}Изменить перевод — {{ project.name }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/expenses.css' %}">
+<script src="{% static 'js/flatpickr.min.js' %}"></script>
+<script src="{% static 'js/flatpickr-ru.js' %}"></script>
+{% endblock %}
+
+{% block body_class %}page-app{% endblock %}
+
+{% block content %}
+<div class="app-page">
+    <a href="{% url 'transfers-list' pr_pk=pr_pk %}" class="app-back">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        К переводам
+    </a>
+
+    <header class="app-page-header">
+        <div>
+            <h1 class="app-page-title">Изменить перевод</h1>
+            <p class="app-page-lead">Проект {{ project.name }}</p>
+        </div>
+    </header>
+
+    <form method="post" class="app-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <ul class="app-error-list">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="app-field">
+            <label for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
+            {{ form.date }}
+            {% for error in form.date.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="app-field">
+            <label for="{{ form.value.id_for_label }}">{{ form.value.label }}</label>
+            {{ form.value }}
+            {% for error in form.value.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="app-field">
+            <label for="{{ form.source.id_for_label }}">{{ form.source.label }}</label>
+            {{ form.source }}
+            {% for error in form.source.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="app-field">
+            <label for="{{ form.aim.id_for_label }}">{{ form.aim.label }}</label>
+            {{ form.aim }}
+            {% for error in form.aim.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="app-field">
+            <label for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
+            {{ form.comment }}
+            {% for error in form.comment.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="app-form-actions">
+            <button type="submit" class="app-btn app-btn-primary">Сохранить</button>
+            <a href="{% url 'transfers-list' pr_pk=pr_pk %}" class="app-btn app-btn-ghost app-btn-ghost-label">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr("[data-datepicker]", {
+            dateFormat: "d.m.Y",
+            locale: "ru",
+            allowInput: false,
+        });
+    });
+</script>
+{% endblock %}

@@ -1,28 +1,77 @@
 {% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Изменить проект{% else %}Новый проект{% endif %} — Финансы{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/project.css' %}">
+{% endblock %}
+
+{% block body_class %}page-app{% endblock %}
 
 {% block content %}
-    <h1>
-        {% if 'create' in request.get_full_path %}
-            Создать проект
-        {% elif 'update' in request.get_full_path %}  
-            Изменить проект
-        {% endif %}
-    </h1>
-    <form method="post" class="form">
+<div class="app-page">
+    <a href="{% if object %}{% url 'project-detail' object.pk %}{% else %}{% url 'profile' %}{% endif %}" class="app-back">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        Назад
+    </a>
+
+    <header class="app-page-header">
+        <div>
+            <h1 class="app-page-title">
+                {% if object %}Изменить проект{% else %}Новый проект{% endif %}
+            </h1>
+            <p class="app-page-lead">
+                {% if object %}Название, участники и статус{% else %}Создайте пространство для учёта{% endif %}
+            </p>
+        </div>
+    </header>
+
+    <form method="post" class="app-form">
         {% csrf_token %}
 
-        <div class="form-row">
-            {{ form.name.label_tag }}
+        {% if form.non_field_errors %}
+        <ul class="app-error-list">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="app-field">
+            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
             {{ form.name }}
+            {% for error in form.name.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <div class="form-row">
-            {{ form.members.label_tag }}
+        <div class="app-field">
+            <label for="{{ form.members.id_for_label }}">{{ form.members.label }}</label>
             {{ form.members }}
+            {% for error in form.members.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <button type="submit" class="btn btn-success">Подтвердить</button>
+        {% if form.is_active %}
+        <div class="app-field app-field-checkbox">
+            {{ form.is_active }}
+            <label for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+            {% for error in form.is_active.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="app-form-actions">
+            <button type="submit" class="app-btn app-btn-primary">
+                {% if object %}Сохранить{% else %}Создать{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'project-detail' object.pk %}{% else %}{% url 'profile' %}{% endif %}" class="app-btn app-btn-ghost app-btn-ghost-label">
+                Отмена
+            </a>
+        </div>
     </form>
+</div>
 {% endblock %}

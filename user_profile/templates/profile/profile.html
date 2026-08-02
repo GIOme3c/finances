@@ -1,49 +1,70 @@
 {% extends 'layout.html' %}
-{% load material_icons %}
+{% load static %}
+
+{% block title %}Проекты — Финансы{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block body_class %}page-app{% endblock %}
 
 {% block content %}
-    <h2>Профиль {{ user.username }}</h2>
+<div class="app-page">
+    <header class="app-page-header">
+        <div>
+            <h1 class="app-page-title">Проекты</h1>
+            <p class="app-page-lead">Пространства для учёта расходов и доходов</p>
+        </div>
+    </header>
 
-    <table class="table table-striped">
-        <thead>
-            <th>Название</th>
-            <th>Создатель</th>
-            <th>Участники</th>
-            <th>Действия</th>
-        </thead>
-        <tbody>
-            <tr>
-                <td colspan="4">
-                    <div class="d-flex justify-content-center">
-                        {% url 'project-create' as create_project%}
-                        {% material_icon_button  'add' 'btn-success' create_project %}
-                    </div>
-                </td>
-            </tr>
-            {% for project in projects %}
-                <tr style="cursor: pointer;" 
-                    onclick="window.location.href=`{% url 'project-detail' project.pk %}`;"
-                    onmouseover="this.style.backgroundColor='#f5f5f5';" 
-                    onmouseout="this.style.backgroundColor='';"
+    <ul class="project-tiles">
+        {% for project in projects %}
+        <li class="project-tile">
+            <div class="project-tile-frame">
+                <a
+                    href="{% url 'project-detail' project.pk %}"
+                    class="project-tile-face"
+                    title="{{ project.name }}"
                 >
-                    <td>{{ project.name }}</td>
-                    <td>{{ project.owner }}</td>
-                    <td>
-                        {{ project.members_to_string }}
-                    </td>
-                    <td>
-                        <div class="d-flex flex-row">
-                            {% url 'project-update' project.pk  as update_url %}
-                            {% material_icon_button  'edit' 'btn-success me-1' update_url %}
+                    <span class="project-tile-letter" aria-hidden="true">
+                        {{ project.name|slice:":1"|upper }}
+                    </span>
+                    <span class="project-tile-label">{{ project.name }}</span>
+                    <span class="project-tile-meta">{{ project.owner }}</span>
+                </a>
+                <div class="project-tile-actions">
+                    <a
+                        href="{% url 'project-update' project.pk %}"
+                        class="project-tile-action"
+                        title="Редактировать"
+                        aria-label="Редактировать {{ project.name }}"
+                    >
+                        <span class="material-icons" aria-hidden="true">edit</span>
+                    </a>
+                    <a
+                        href="{% url 'project-delete' project.pk %}"
+                        class="project-tile-action project-tile-action-danger"
+                        title="Удалить"
+                        aria-label="Удалить {{ project.name }}"
+                    >
+                        <span class="material-icons" aria-hidden="true">delete</span>
+                    </a>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
 
-                            {% url 'project-delete' project.pk as delete_url %}
-                            {% material_icon_button  'delete' 'btn-danger' delete_url %}
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-
+        <li class="project-tile">
+            <a
+                href="{% url 'project-create' %}"
+                class="project-tile-frame project-tile-add"
+                aria-label="Новый проект"
+            >
+                <span class="material-icons" aria-hidden="true">add</span>
+                <span class="project-tile-label project-tile-label-muted">Новый проект</span>
+            </a>
+        </li>
+    </ul>
+</div>
 {% endblock %}

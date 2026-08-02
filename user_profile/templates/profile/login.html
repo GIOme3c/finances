@@ -1,11 +1,71 @@
 {% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Вход — Финансы{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block body_class %}page-auth{% endblock %}
+
+{% block chrome %}{% endblock %}
 
 {% block content %}
-<h2>Вход</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Войти</button>
-</form>
-<p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+<div class="auth-page">
+    <div class="auth-panel">
+        <h1 class="auth-brand">Финансы</h1>
+        <span class="auth-brand-line" aria-hidden="true"></span>
+        <p class="auth-lead">Войдите в свой учёт</p>
+
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <ul class="auth-error-list">
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="auth-field{% if form.username.errors %} auth-field-error{% endif %}">
+                <label for="{{ form.username.id_for_label }}">Имя пользователя</label>
+                <input
+                    type="text"
+                    name="{{ form.username.name }}"
+                    id="{{ form.username.id_for_label }}"
+                    value="{{ form.username.value|default_if_none:'' }}"
+                    autocomplete="username"
+                    autofocus
+                    required
+                >
+                {% for error in form.username.errors %}
+                <p class="auth-field-error-text">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="auth-field{% if form.password.errors %} auth-field-error{% endif %}">
+                <label for="{{ form.password.id_for_label }}">Пароль</label>
+                <input
+                    type="password"
+                    name="{{ form.password.name }}"
+                    id="{{ form.password.id_for_label }}"
+                    autocomplete="current-password"
+                    required
+                >
+                {% for error in form.password.errors %}
+                <p class="auth-field-error-text">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="auth-submit">Войти</button>
+        </form>
+
+        <p class="auth-footer">
+            Нет аккаунта?
+            <a href="{% url 'register' %}">Зарегистрироваться</a>
+        </p>
+    </div>
+</div>
 {% endblock %}

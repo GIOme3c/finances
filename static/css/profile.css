@@ -1,0 +1,205 @@
+/* Profile: browser-style square project tiles */
+
+.project-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 1.35rem 1.25rem;
+    justify-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0 0;
+    max-width: 760px;
+}
+
+.project-tile {
+    width: 100%;
+    max-width: 168px;
+}
+
+.project-tile-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 20px;
+    transition: transform var(--transition-fast);
+}
+
+.project-tile:hover .project-tile-frame {
+    transform: translateY(-3px);
+}
+
+.project-tile-face {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+    height: 100%;
+    padding: 1.1rem 0.85rem 1rem;
+    border-radius: inherit;
+    border: 1px solid var(--color-border);
+    background:
+        radial-gradient(circle at 30% 22%, rgba(228, 180, 90, 0.16), transparent 55%),
+        var(--color-surface-solid);
+    color: var(--color-text);
+    text-decoration: none;
+    text-align: center;
+    transition:
+        border-color var(--transition-fast),
+        background-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.project-tile:hover .project-tile-face {
+    border-color: rgba(228, 180, 90, 0.35);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
+    color: var(--color-text);
+}
+
+.project-tile-letter {
+    font-family: var(--font-brand);
+    font-size: clamp(2rem, 4.5vw, 2.45rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--color-accent);
+    user-select: none;
+}
+
+.project-tile-label {
+    display: -webkit-box;
+    width: 100%;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text);
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.project-tile-label-muted {
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.project-tile-meta {
+    display: block;
+    width: 100%;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.project-tile-actions {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.45rem;
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+}
+
+.project-tile:hover .project-tile-actions,
+.project-tile:focus-within .project-tile-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.project-tile-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 8px;
+    color: var(--color-text-muted);
+    background: rgba(11, 15, 20, 0.78);
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.project-tile-action .material-icons {
+    font-size: 1rem;
+}
+
+.project-tile-action:hover {
+    color: var(--color-text);
+    border-color: rgba(232, 237, 242, 0.2);
+    background: rgba(11, 15, 20, 0.92);
+}
+
+.project-tile-action-danger:hover {
+    color: var(--color-error);
+    border-color: rgba(224, 122, 111, 0.4);
+    background: var(--color-error-bg);
+}
+
+.project-tile-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 1.1rem 0.85rem;
+    border: 1px dashed rgba(232, 237, 242, 0.2);
+    border-radius: inherit;
+    background: rgba(26, 34, 45, 0.35);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    text-align: center;
+    transition:
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        background-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.project-tile-add .material-icons {
+    font-size: 2rem;
+}
+
+.project-tile:hover .project-tile-add {
+    border-color: rgba(228, 180, 90, 0.4);
+    color: var(--color-accent);
+    background: rgba(26, 34, 45, 0.65);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+}
+
+.project-tile:hover .project-tile-add .project-tile-label-muted {
+    color: var(--color-accent);
+}
+
+@media (max-width: 560px) {
+    .project-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+        gap: 1rem 0.85rem;
+        max-width: none;
+    }
+
+    .project-tile {
+        max-width: 152px;
+    }
+
+    .project-tile-actions {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-tile:hover .project-tile-frame {
+        transform: none;
+    }
+}

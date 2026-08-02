@@ -1,0 +1,111 @@
+{% load static %}
+{# Expects: income_form, pr_pk #}
+
+<link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/expenses.css' %}">
+<script src="{% static 'js/flatpickr.min.js' %}"></script>
+<script src="{% static 'js/flatpickr-ru.js' %}"></script>
+
+<div
+    class="modal fade"
+    id="incomeCreateModal"
+    tabindex="-1"
+    aria-labelledby="incomeCreateModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="incomeCreateModalLabel">Новый доход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <form
+                id="incomeCreateForm"
+                method="post"
+                action="{% url 'income-create' pr_pk=pr_pk %}"
+                class="app-form expense-modal-form"
+                novalidate
+            >
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div id="incomeCreateFormErrors" class="app-error-list" hidden></div>
+
+                    <div class="app-field">
+                        <label for="{{ income_form.date.id_for_label }}">{{ income_form.date.label }}</label>
+                        {{ income_form.date }}
+                        <p class="app-field-error-text" data-field-error="date" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ income_form.value.id_for_label }}">{{ income_form.value.label }}</label>
+                        {{ income_form.value }}
+                        <p class="app-field-error-text" data-field-error="value" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ income_form.category.id_for_label }}">{{ income_form.category.label }}</label>
+                        <div class="app-field-with-action">
+                            {{ income_form.category }}
+                            <button
+                                type="button"
+                                class="app-btn app-btn-ghost app-btn-ghost-label"
+                                data-bs-toggle="modal"
+                                data-bs-target="#addIncomeCategoryModal"
+                            >
+                                Добавить
+                            </button>
+                        </div>
+                        <p class="app-field-error-text" data-field-error="category" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ income_form.wallet.id_for_label }}">{{ income_form.wallet.label }}</label>
+                        {{ income_form.wallet }}
+                        <p class="app-field-error-text" data-field-error="wallet" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ income_form.comment.id_for_label }}">{{ income_form.comment.label }}</label>
+                        {{ income_form.comment }}
+                        <p class="app-field-error-text" data-field-error="comment" hidden></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="app-btn app-btn-ghost app-btn-ghost-label" data-bs-dismiss="modal">
+                        Отмена
+                    </button>
+                    <button type="submit" class="app-btn app-btn-primary" id="incomeCreateSubmit">
+                        Добавить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addIncomeCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Новая категория дохода</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addIncomeCategoryForm">
+                    {% csrf_token %}
+                    <input type="text" name="name" class="form-control" placeholder="Название категории" required>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="addIncomeCategoryBtn">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script
+    src="{% static 'js/income_create_modal.js' %}"
+    data-income-category-url="{% url 'income-category-create-modal' pr_pk=pr_pk %}"
+    defer
+></script>

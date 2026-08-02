@@ -1,249 +1,294 @@
 {% extends "layout.html" %}
 {% load static %}
 
+{% block title %}{% if object and object.pk %}Изменить расход{% else %}Новый расход{% endif %} — {{ project.name }}{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
-    <script src="{% static 'js/flatpickr.min.js' %}"></script>
-    <script src="{% static 'js/flatpickr-ru.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/expenses.css' %}">
+<script src="{% static 'js/flatpickr.min.js' %}"></script>
+<script src="{% static 'js/flatpickr-ru.js' %}"></script>
 {% endblock %}
 
+{% block body_class %}page-app{% endblock %}
 
 {% block content %}
-    <h1>
-        {% if 'create' in request.get_full_path %}
-            Новая запись в история расходов
-        {% elif 'update' in request.get_full_path %}  
-            Изменить запись в истории расходов 
-        {% endif %}
-    </h1>
-    <form method="post" class="form">
+<div class="app-page">
+    <a href="{% url 'expenses-list' pr_pk=pr_pk %}" class="app-back">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        К расходам
+    </a>
+
+    <header class="app-page-header">
+        <div>
+            <h1 class="app-page-title">
+                {% if object and object.pk %}Изменить расход{% else %}Новый расход{% endif %}
+            </h1>
+            <p class="app-page-lead">Проект {{ project.name }}</p>
+        </div>
+    </header>
+
+    <form method="post" class="app-form">
         {% csrf_token %}
 
-        <div class="form-row">
-            {{ form.date.label_tag }}
+        {% if form.non_field_errors %}
+        <ul class="app-error-list">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="app-field">
+            <label for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
             {{ form.date }}
-            <!-- {{ form.date.value }} -->
+            {% for error in form.date.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <div class="form-row">
-            {{ form.value.label_tag }}
+        <div class="app-field">
+            <label for="{{ form.value.id_for_label }}">{{ form.value.label }}</label>
             {{ form.value }}
+            {% for error in form.value.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <div class="form-row">
-            {{ form.category.label_tag }}
-            <div class="select-button-wrapper">
+        <div class="app-field">
+            <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+            <div class="app-field-with-action">
                 {{ form.category }}
-                <button type="button" onclick="event.preventDefault()" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Добавить</button>
+                <button type="button" class="app-btn app-btn-ghost app-btn-ghost-label" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    Добавить
+                </button>
             </div>
+            {% for error in form.category.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <div class="form-row">
-            {{ form.subcategory.label_tag }}
-            <div class="select-button-wrapper">
+        <div class="app-field">
+            <label for="{{ form.subcategory.id_for_label }}">{{ form.subcategory.label }}</label>
+            <div class="app-field-with-action">
                 {{ form.subcategory }}
-                <button type="button" onclick="event.preventDefault()" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">Добавить</button>
+                <button type="button" class="app-btn app-btn-ghost app-btn-ghost-label" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">
+                    Добавить
+                </button>
             </div>
+            {% for error in form.subcategory.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <div class="form-row">
-            {{ form.wallet.label_tag }}
+        <div class="app-field">
+            <label for="{{ form.wallet.id_for_label }}">{{ form.wallet.label }}</label>
             {{ form.wallet }}
+            {% for error in form.wallet.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <div class="form-row">
-            {{ form.comment.label_tag }}
+        <div class="app-field">
+            <label for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
             {{ form.comment }}
+            {% for error in form.comment.errors %}
+            <p class="app-field-error-text">{{ error }}</p>
+            {% endfor %}
         </div>
-        <hr>
 
-        <button type="submit" class="btn btn-success">Подтвердить</button>
+        <div class="app-form-actions">
+            <button type="submit" class="app-btn app-btn-primary">
+                {% if object and object.pk %}Сохранить{% else %}Добавить{% endif %}
+            </button>
+            <a href="{% url 'expenses-list' pr_pk=pr_pk %}" class="app-btn app-btn-ghost app-btn-ghost-label">Отмена</a>
+        </div>
     </form>
+</div>
 
-    <!-- Модальные окна -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Добавить новую категорию</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addCategoryForm">
-                        {% csrf_token %}
-                        <input type="text" name="name" class="form-control" placeholder="Название категории" required>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary" onclick="addCategory()">Добавить</button>
-                </div>
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Новая категория</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm">
+                    {% csrf_token %}
+                    <input type="text" name="name" class="form-control" placeholder="Название категории" required>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="addCategory()">Добавить</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Добавить новую подкатегорию</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addSubcategoryForm">
-                        {% csrf_token %}
-                        <select id="category_select_modal" name="category" class="form-select mb-2" required>
-                            <option value="">Выберите категорию</option>
-                            {% for category in form.category.field.queryset %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="text" name="name" class="form-control" placeholder="Название подкатегории" required>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary" onclick="addSubcategory()">Добавить</button>
-                </div>
+<div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Новая подкатегория</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSubcategoryForm">
+                    {% csrf_token %}
+                    <select id="category_select_modal" name="category" class="form-select mb-2" required>
+                        <option value="">Выберите категорию</option>
+                        {% for category in form.category.field.queryset %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="name" class="form-control" placeholder="Название подкатегории" required>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="addSubcategory()">Добавить</button>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const dateField = document.getElementById('id_date');
-        
-            flatpickr("[data-datepicker]", {
-                dateFormat: "d.m.Y",
-                locale: "ru",
-                allowInput: false,
-            });
+{{ subcategories_data|json_script:"subcategories-data" }}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr("[data-datepicker]", {
+            dateFormat: "d.m.Y",
+            locale: "ru",
+            allowInput: false,
+        });
 
+        const categorySelect = document.getElementById("id_category");
+        const subcategorySelect = document.getElementById("id_subcategory");
+        const emptyLabel = "---------";
+        let subcategories = JSON.parse(
+            document.getElementById("subcategories-data").textContent
+        );
 
-            {% comment %} // Получаем элементы select
-            const categorySelect = document.getElementById('id_category');
-            const subcategorySelect = document.getElementById('id_subcategory');
-            
-            // Обработчик изменения категории
-            categorySelect.addEventListener('change', function() {
-                const selectedCategoryId = this.value;
-                
-                // Очищаем подкатегории
-                subcategorySelect.innerHTML = '<option value="">---------</option>';
-                
-                if (selectedCategoryId) {
-                    // Загружаем подкатегории для выбранной категории
-                    fetch(`/api/subcategories/?category_id=${selectedCategoryId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            data.forEach(subcategory => {
-                                const option = new Option(subcategory.name, subcategory.id);
-                                subcategorySelect.add(option);
-                            });
-                        });
-                }
-            });
-            
-            // Обработчик изменения подкатегории
-            subcategorySelect.addEventListener('change', function() {
-                const selectedSubcategoryId = this.value;
-                
-                if (selectedSubcategoryId) {
-                    // Получаем категорию для выбранной подкатегории
-                    fetch(`/api/subcategory/${selectedSubcategoryId}/`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Устанавливаем соответствующую категорию
-                            categorySelect.value = data.category_id;
-                            
-                            // Обновляем список подкатегорий для выбранной категории
-                            const event = new Event('change');
-                            categorySelect.dispatchEvent(event);
-                        });
-                }
-            });
-            
-            // Инициализируем список подкатегорий при загрузке, если категория уже выбрана
-            if (categorySelect.value) {
-                const event = new Event('change');
-                categorySelect.dispatchEvent(event);
-            }{% endcomment %}
-        }); 
-    </script>
+        function renderSubcategories(categoryId, selectedId) {
+            const selected = selectedId != null ? String(selectedId) : "";
+            subcategorySelect.innerHTML = "";
+            subcategorySelect.add(new Option(emptyLabel, ""));
 
-    <script>
-        function addCategory() {
-            const form = document.getElementById('addCategoryForm');
+            subcategories
+                .filter((item) => !categoryId || String(item.category_id) === String(categoryId))
+                .forEach((item) => {
+                    subcategorySelect.add(
+                        new Option(
+                            item.name,
+                            item.id,
+                            false,
+                            String(item.id) === selected
+                        )
+                    );
+                });
+        }
+
+        categorySelect.addEventListener("change", function () {
+            const categoryId = categorySelect.value;
+            const currentSubId = subcategorySelect.value;
+            const currentSub = subcategories.find(
+                (item) => String(item.id) === String(currentSubId)
+            );
+            const keepSelected =
+                categoryId &&
+                currentSub &&
+                String(currentSub.category_id) === String(categoryId)
+                    ? currentSubId
+                    : "";
+            renderSubcategories(categoryId, keepSelected);
+        });
+
+        subcategorySelect.addEventListener("change", function () {
+            if (categorySelect.value || !subcategorySelect.value) {
+                return;
+            }
+            const selected = subcategories.find(
+                (item) => String(item.id) === String(subcategorySelect.value)
+            );
+            if (!selected) {
+                return;
+            }
+            categorySelect.value = String(selected.category_id);
+            renderSubcategories(selected.category_id, selected.id);
+        });
+
+        renderSubcategories(categorySelect.value, subcategorySelect.value);
+
+        window.addCategory = function addCategory() {
+            const form = document.getElementById("addCategoryForm");
             const formData = new FormData(form);
-            
+
             fetch("{% url 'category-create-modal' pr_pk=pr_pk %}", {
-                method: 'POST',
+                method: "POST",
                 body: formData,
                 headers: {
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                    "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Добавляем новую категорию в select
-                    const select = document.getElementById('id_category');
-                    const option = new Option(data.name, data.id, true, true);
-                    select.add(option);
-                    
-                    const select_modal = document.getElementById('category_select_modal');
-                    const option_modal = new Option(data.name, data.id);
-                    select_modal.add(option_modal);
-                    
-                    // Закрываем модальное окно
-                    bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
-                    
-                    // Очищаем форму
-                    form.reset();
-                } else {
-                    alert(data.error || 'Ошибка при добавлении категории');
-                }
-            });
-        }
-    
-        function addSubcategory() {
-            const form = document.getElementById('addSubcategoryForm');
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        categorySelect.add(new Option(data.name, data.id, true, true));
+                        document
+                            .getElementById("category_select_modal")
+                            .add(new Option(data.name, data.id));
+                        renderSubcategories(data.id, "");
+                        bootstrap.Modal.getInstance(
+                            document.getElementById("addCategoryModal")
+                        ).hide();
+                        form.reset();
+                    } else {
+                        alert(data.error || "Ошибка при добавлении категории");
+                    }
+                });
+        };
+
+        window.addSubcategory = function addSubcategory() {
+            const form = document.getElementById("addSubcategoryForm");
             const formData = new FormData(form);
-            
+
             fetch("{% url 'subcategory-create-modal' pr_pk=pr_pk %}", {
-                method: 'POST',
+                method: "POST",
                 body: formData,
                 headers: {
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                    "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Добавляем новую подкатегорию в select
-                    const select = document.getElementById('id_subcategory');
-                    const option = new Option(data.name, data.id, true, true);
-                    select.add(option);
-                    
-                    // Закрываем модальное окно
-                    bootstrap.Modal.getInstance(document.getElementById('addSubcategoryModal')).hide();
-                    
-                    // Очищаем форму
-                    form.reset();
-                } else {
-                    alert(data.error || 'Ошибка при добавлении подкатегории');
-                }
-            });
-        }
-    </script>
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        subcategories.push({
+                            id: data.id,
+                            name: data.name,
+                            category_id: data.category_id,
+                        });
+                        if (!categorySelect.value) {
+                            categorySelect.value = String(data.category_id);
+                        } else if (
+                            String(categorySelect.value) !== String(data.category_id)
+                        ) {
+                            categorySelect.value = String(data.category_id);
+                        }
+                        renderSubcategories(categorySelect.value, data.id);
+                        bootstrap.Modal.getInstance(
+                            document.getElementById("addSubcategoryModal")
+                        ).hide();
+                        form.reset();
+                    } else {
+                        alert(data.error || "Ошибка при добавлении подкатегории");
+                    }
+                });
+        };
+    });
+</script>
 {% endblock %}

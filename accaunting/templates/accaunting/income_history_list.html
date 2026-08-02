@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% block title %}Расходы — {{ project.name }}{% endblock %}
+{% block title %}Доходы — {{ project.name }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/expenses.css' %}">
@@ -19,14 +19,14 @@
 
     <header class="app-page-header">
         <div>
-            <h1 class="app-page-title">Расходы</h1>
-            <p class="app-page-lead">История трат проекта {{ project.name }}</p>
+            <h1 class="app-page-title">Доходы</h1>
+            <p class="app-page-lead">История доходов проекта {{ project.name }}</p>
         </div>
         <button
             type="button"
             class="app-btn app-btn-primary"
             data-bs-toggle="modal"
-            data-bs-target="#expenseCreateModal"
+            data-bs-target="#incomeCreateModal"
         >
             <span class="material-icons" aria-hidden="true">add</span>
             Добавить
@@ -38,31 +38,29 @@
         {% for object in object_list %}
         <li class="expenses-item">
             <div>
-                <p class="expenses-item-title">
-                    {{ object.category }}{% if object.subcategory %} · {{ object.subcategory }}{% endif %}
-                </p>
+                <p class="expenses-item-title">{{ object.category }}</p>
                 <p class="expenses-item-meta">
                     {{ object.wallet }}
                     {% if object.comment %} · {{ object.comment|truncatechars:60 }}{% endif %}
                 </p>
             </div>
             <div class="expenses-item-side">
-                <p class="expenses-item-amount">−{{ object.value }}</p>
+                <p class="expenses-item-amount is-positive">+{{ object.value }}</p>
                 <p class="expenses-item-date">{{ object.date|date:"d.m.Y" }}</p>
                 <div class="expenses-item-actions">
                     <a
-                        href="{% url 'expenses-update' pr_pk=pr_pk pk=object.pk %}"
+                        href="{% url 'income-update' pr_pk=pr_pk pk=object.pk %}"
                         class="app-btn app-btn-ghost"
                         title="Редактировать"
-                        aria-label="Редактировать расход"
+                        aria-label="Редактировать доход"
                     >
                         <span class="material-icons" aria-hidden="true">edit</span>
                     </a>
                     <a
-                        href="{% url 'expenses-delete' pr_pk=pr_pk pk=object.pk %}"
+                        href="{% url 'income-delete' pr_pk=pr_pk pk=object.pk %}"
                         class="app-btn app-btn-ghost app-btn-danger"
                         title="Удалить"
-                        aria-label="Удалить расход"
+                        aria-label="Удалить доход"
                     >
                         <span class="material-icons" aria-hidden="true">delete</span>
                     </a>
@@ -100,20 +98,20 @@
 
     {% else %}
     <div class="expenses-empty">
-        <h2 class="expenses-empty-title">Расходов пока нет</h2>
-        <p class="expenses-empty-text">Добавьте первую трату, чтобы вести историю</p>
+        <h2 class="expenses-empty-title">Доходов пока нет</h2>
+        <p class="expenses-empty-text">Добавьте первую запись, чтобы вести историю</p>
         <button
             type="button"
             class="app-btn app-btn-primary"
             data-bs-toggle="modal"
-            data-bs-target="#expenseCreateModal"
+            data-bs-target="#incomeCreateModal"
         >
             <span class="material-icons" aria-hidden="true">add</span>
-            Добавить расход
+            Добавить доход
         </button>
     </div>
     {% endif %}
 </div>
 
-{% include "accaunting/partials/expense_create_modal.html" %}
+{% include "accaunting/partials/income_create_modal.html" %}
 {% endblock %}

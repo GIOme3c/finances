@@ -1,0 +1,61 @@
+{% load static %}
+{# Expects: wallet_form, pr_pk #}
+
+<link rel="stylesheet" href="{% static 'css/expenses.css' %}">
+
+<div
+    class="modal fade"
+    id="walletCreateModal"
+    tabindex="-1"
+    aria-labelledby="walletCreateModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="walletCreateModalLabel">Новый счёт</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <form
+                id="walletCreateForm"
+                method="post"
+                action="{% url 'wallet-create' pr_pk=pr_pk %}"
+                class="app-form expense-modal-form"
+                novalidate
+            >
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div id="walletCreateFormErrors" class="app-error-list" hidden></div>
+
+                    <div class="app-field">
+                        <label for="{{ wallet_form.name.id_for_label }}">{{ wallet_form.name.label }}</label>
+                        {{ wallet_form.name }}
+                        <p class="app-field-error-text" data-field-error="name" hidden></p>
+                    </div>
+
+                    <div class="app-field">
+                        <label for="{{ wallet_form.current_value.id_for_label }}">{{ wallet_form.current_value.label }}</label>
+                        {{ wallet_form.current_value }}
+                        <p class="app-field-error-text" data-field-error="current_value" hidden></p>
+                    </div>
+
+                    <div class="app-field app-field-checkbox">
+                        {{ wallet_form.is_keeping }}
+                        <label for="{{ wallet_form.is_keeping.id_for_label }}">{{ wallet_form.is_keeping.label }}</label>
+                        <p class="app-field-error-text" data-field-error="is_keeping" hidden></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="app-btn app-btn-ghost app-btn-ghost-label" data-bs-dismiss="modal">
+                        Отмена
+                    </button>
+                    <button type="submit" class="app-btn app-btn-primary" id="walletCreateSubmit">
+                        Добавить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/wallet_create_modal.js' %}" defer></script>

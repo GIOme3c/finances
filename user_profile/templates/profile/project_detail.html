@@ -1,7 +1,404 @@
 {% extends 'layout.html' %}
+{% load static %}
 
+{% block title %}{{ project.name }} — Финансы{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/project.css' %}">
+<link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
+<script src="{% static 'js/flatpickr.min.js' %}"></script>
+<script src="{% static 'js/flatpickr-ru.js' %}"></script>
+{% endblock %}
+
+{% block body_class %}page-app{% endblock %}
+{% block content_class %}content-wide{% endblock %}
 
 {% block content %}
-{{ expenses }}
-{{ income }}
+<div class="app-page">
+    <a href="{% url 'profile' %}" class="app-back">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        Все проекты
+    </a>
+
+    <header class="project-hero">
+        <div>
+            <div class="project-hero-mark" aria-hidden="true">{{ project.name|slice:":1"|upper }}</div>
+            <h1 class="app-page-title">{{ project.name }}</h1>
+            <p class="project-meta">
+                {{ project.owner }}
+                {% if members %}
+                    ·
+                    {% for member in members %}
+                        {{ member.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </p>
+        </div>
+        <div class="app-btn-row">
+            <a href="{% url 'project-update' project.pk %}" class="app-btn app-btn-ghost" title="Редактировать" aria-label="Редактировать проект">
+                <span class="material-icons" aria-hidden="true">edit</span>
+            </a>
+            <a href="{% url 'project-delete' project.pk %}" class="app-btn app-btn-ghost app-btn-danger" title="Удалить" aria-label="Удалить проект">
+                <span class="material-icons" aria-hidden="true">delete</span>
+            </a>
+        </div>
+    </header>
+
+    <section class="project-stats" aria-label="Сводка">
+        <div class="project-stat">
+            <p class="project-stat-label">На счетах</p>
+            <p class="project-stat-value">{{ balance_total }}</p>
+        </div>
+        <div class="project-stat">
+            <p class="project-stat-label">Доходы</p>
+            <p class="project-stat-value is-positive">{{ income_total }}</p>
+        </div>
+        <div class="project-stat">
+            <p class="project-stat-label">Расходы</p>
+            <p class="project-stat-value is-negative">{{ expenses_total }}</p>
+        </div>
+    </section>
+
+    <section class="app-panel project-wallets-panel">
+        <div class="project-section-head">
+            <h2 class="app-panel-title">Счета</h2>
+            <div class="project-section-actions">
+                <button
+                    type="button"
+                    class="app-btn app-btn-ghost"
+                    title="Добавить счёт"
+                    aria-label="Добавить счёт"
+                    data-bs-toggle="modal"
+                    data-bs-target="#walletCreateModal"
+                >
+                    <span class="material-icons" aria-hidden="true">add</span>
+                </button>
+            </div>
+        </div>
+        {% if wallets %}
+        <div class="project-wallets">
+            {% for wallet in wallets %}
+            <div class="project-wallet">
+                <p class="project-wallet-name">{{ wallet.name }}</p>
+                <p class="project-wallet-value">{{ wallet.current_value }}</p>
+                {% if wallet.is_keeping %}
+                <span class="project-wallet-tag">Накопительный</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="project-empty-note">Счетов пока нет</p>
+        {% endif %}
+    </section>
+
+    <section class="app-panel project-period-panel" aria-label="Период">
+        <div class="project-period-head">
+            <h2 class="app-panel-title">Период</h2>
+            <p class="project-period-summary">{{ period.label }}</p>
+        </div>
+        <div class="project-period-tabs" role="tablist" aria-label="Тип периода">
+            {% for option in period.options %}
+            <a
+                href="?{{ option.query }}"
+                class="project-period-tab{% if option.active %} is-active{% endif %}"
+                role="tab"
+                aria-selected="{% if option.active %}true{% else %}false{% endif %}"
+            >{{ option.title }}</a>
+            {% endfor %}
+        </div>
+
+        {% if period.period == "month" %}
+        <form method="get" class="project-period-extras" data-period-form>
+            <input type="hidden" name="period" value="month">
+            <div class="app-field project-period-field">
+                <label for="period_month">Месяц</label>
+                <input
+                    id="period_month"
+                    type="month"
+                    name="month"
+                    value="{{ period.month_value }}"
+                    data-period-auto-submit
+                >
+            </div>
+        </form>
+        {% elif period.period == "custom" %}
+        <form method="get" class="project-period-extras" data-period-form>
+            <input type="hidden" name="period" value="custom">
+            <div class="app-field project-period-field">
+                <label for="period_from">Начало</label>
+                <input
+                    id="period_from"
+                    type="text"
+                    name="from"
+                    value="{{ period.from_value }}"
+                    data-datepicker
+                    placeholder="дд.мм.гггг"
+                    autocomplete="off"
+                >
+            </div>
+            <div class="app-field project-period-field">
+                <label for="period_to">Конец</label>
+                <input
+                    id="period_to"
+                    type="text"
+                    name="to"
+                    value="{{ period.to_value }}"
+                    data-datepicker
+                    placeholder="дд.мм.гггг"
+                    autocomplete="off"
+                >
+            </div>
+            <button type="submit" class="app-btn app-btn-primary">Применить</button>
+        </form>
+        {% endif %}
+    </section>
+
+    <div class="project-layout">
+        <section class="app-panel">
+            <div class="project-section-head">
+                <h2 class="app-panel-title">Последние расходы</h2>
+                <div class="project-section-actions">
+                    <a href="{% url 'expenses-list' pr_pk=project.pk %}" class="app-btn app-btn-text">Все</a>
+                    <button
+                        type="button"
+                        class="app-btn app-btn-ghost"
+                        title="Добавить расход"
+                        aria-label="Добавить расход"
+                        data-bs-toggle="modal"
+                        data-bs-target="#expenseCreateModal"
+                    >
+                        <span class="material-icons" aria-hidden="true">add</span>
+                    </button>
+                </div>
+            </div>
+
+            {% if expense_categories %}
+            <div class="expense-drill" data-tree-drill>
+                <ul class="expense-drill-list">
+                    {% for category in expense_categories %}
+                    <li class="expense-drill-node">
+                        <button
+                            type="button"
+                            class="expense-drill-item"
+                            data-tree-toggle
+                            aria-expanded="false"
+                        >
+                            <span class="expense-drill-item-main">
+                                <span class="expense-drill-item-title">
+                                    <span class="material-icons expense-drill-chevron" aria-hidden="true">chevron_right</span>
+                                    {{ category.name }}
+                                </span>
+                                <span class="expense-drill-item-meta">{{ category.subcategories|length }} подкат.</span>
+                            </span>
+                            <span class="expense-drill-item-amount is-negative">−{{ category.total }}</span>
+                        </button>
+                        <ul class="expense-drill-list expense-drill-children" hidden>
+                            {% for subcategory in category.subcategories %}
+                            <li class="expense-drill-node">
+                                <button
+                                    type="button"
+                                    class="expense-drill-item"
+                                    data-tree-toggle
+                                    aria-expanded="false"
+                                >
+                                    <span class="expense-drill-item-main">
+                                        <span class="expense-drill-item-title">
+                                            <span class="material-icons expense-drill-chevron" aria-hidden="true">chevron_right</span>
+                                            {{ subcategory.name }}
+                                        </span>
+                                        <span class="expense-drill-item-meta">{{ subcategory.expenses|length }} записей</span>
+                                    </span>
+                                    <span class="expense-drill-item-amount is-negative">−{{ subcategory.total }}</span>
+                                </button>
+                                <ul class="expense-drill-list expense-drill-children" hidden>
+                                    {% for item in subcategory.expenses %}
+                                    <li class="project-feed-item expense-drill-expense">
+                                        <div>
+                                            <p class="project-feed-title">{{ item.wallet }}{% if item.comment %} · {{ item.comment|truncatechars:40 }}{% endif %}</p>
+                                            <p class="project-feed-sub">{{ item.date|date:"d.m.Y" }}</p>
+                                        </div>
+                                        <div class="project-feed-side">
+                                            <p class="project-feed-amount is-negative">−{{ item.value }}</p>
+                                            <div class="project-feed-actions">
+                                                <a
+                                                    href="{{ item.update_url }}"
+                                                    class="app-btn app-btn-ghost"
+                                                    title="Редактировать"
+                                                    aria-label="Редактировать расход"
+                                                >
+                                                    <span class="material-icons" aria-hidden="true">edit</span>
+                                                </a>
+                                                <a
+                                                    href="{{ item.delete_url }}"
+                                                    class="app-btn app-btn-ghost app-btn-danger"
+                                                    title="Удалить"
+                                                    aria-label="Удалить расход"
+                                                >
+                                                    <span class="material-icons" aria-hidden="true">delete</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <p class="expense-drill-hint">Суммы за {{ period.label }}</p>
+            {% else %}
+            <p class="project-empty-note">Расходов за {{ period.label }} пока нет</p>
+            {% endif %}
+        </section>
+
+        <section class="app-panel">
+            <div class="project-section-head">
+                <h2 class="app-panel-title">Последние доходы</h2>
+                <div class="project-section-actions">
+                    <a href="{% url 'income-list' pr_pk=project.pk %}" class="app-btn app-btn-text">Все</a>
+                    <button
+                        type="button"
+                        class="app-btn app-btn-ghost"
+                        title="Добавить доход"
+                        aria-label="Добавить доход"
+                        data-bs-toggle="modal"
+                        data-bs-target="#incomeCreateModal"
+                    >
+                        <span class="material-icons" aria-hidden="true">add</span>
+                    </button>
+                </div>
+            </div>
+            {% if income_categories %}
+            <div class="expense-drill" data-tree-drill>
+                <ul class="expense-drill-list">
+                    {% for category in income_categories %}
+                    <li class="expense-drill-node">
+                        <button
+                            type="button"
+                            class="expense-drill-item"
+                            data-tree-toggle
+                            aria-expanded="false"
+                        >
+                            <span class="expense-drill-item-main">
+                                <span class="expense-drill-item-title">
+                                    <span class="material-icons expense-drill-chevron" aria-hidden="true">chevron_right</span>
+                                    {{ category.name }}
+                                </span>
+                                <span class="expense-drill-item-meta">{{ category.incomes|length }} записей</span>
+                            </span>
+                            <span class="expense-drill-item-amount is-positive">+{{ category.total }}</span>
+                        </button>
+                        <ul class="expense-drill-list expense-drill-children" hidden>
+                            {% for item in category.incomes %}
+                            <li class="project-feed-item expense-drill-expense">
+                                <div>
+                                    <p class="project-feed-title">{{ item.wallet }}{% if item.comment %} · {{ item.comment|truncatechars:40 }}{% endif %}</p>
+                                    <p class="project-feed-sub">{{ item.date|date:"d.m.Y" }}</p>
+                                </div>
+                                <div class="project-feed-side">
+                                    <p class="project-feed-amount is-positive">+{{ item.value }}</p>
+                                    <div class="project-feed-actions">
+                                        <a
+                                            href="{{ item.update_url }}"
+                                            class="app-btn app-btn-ghost"
+                                            title="Редактировать"
+                                            aria-label="Редактировать доход"
+                                        >
+                                            <span class="material-icons" aria-hidden="true">edit</span>
+                                        </a>
+                                        <a
+                                            href="{{ item.delete_url }}"
+                                            class="app-btn app-btn-ghost app-btn-danger"
+                                            title="Удалить"
+                                            aria-label="Удалить доход"
+                                        >
+                                            <span class="material-icons" aria-hidden="true">delete</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <p class="expense-drill-hint">Суммы за {{ period.label }}</p>
+            {% else %}
+            <p class="project-empty-note">Доходов за {{ period.label }} пока нет</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <section class="app-panel project-transfers-panel">
+        <div class="project-section-head">
+            <h2 class="app-panel-title">Последние переводы</h2>
+            <div class="project-section-actions">
+                <a href="{% url 'transfers-list' pr_pk=project.pk %}" class="app-btn app-btn-text">Все</a>
+                <button
+                    type="button"
+                    class="app-btn app-btn-ghost"
+                    title="Добавить перевод"
+                    aria-label="Добавить перевод"
+                    data-bs-toggle="modal"
+                    data-bs-target="#transferCreateModal"
+                >
+                    <span class="material-icons" aria-hidden="true">add</span>
+                </button>
+            </div>
+        </div>
+        {% if recent_transfers %}
+        <ul class="project-feed">
+            {% for item in recent_transfers %}
+            <li class="project-feed-item">
+                <div>
+                    <p class="project-feed-title">{{ item.source }} → {{ item.aim }}</p>
+                    <p class="project-feed-sub">
+                        {{ item.date|date:"d.m.Y" }}{% if item.comment %} · {{ item.comment|truncatechars:40 }}{% endif %}
+                    </p>
+                </div>
+                <div class="project-feed-side">
+                    <p class="project-feed-amount">{{ item.value }}</p>
+                    <div class="project-feed-actions">
+                        <a
+                            href="{{ item.update_url }}"
+                            class="app-btn app-btn-ghost"
+                            title="Редактировать"
+                            aria-label="Редактировать перевод"
+                        >
+                            <span class="material-icons" aria-hidden="true">edit</span>
+                        </a>
+                        <a
+                            href="{{ item.delete_url }}"
+                            class="app-btn app-btn-ghost app-btn-danger"
+                            title="Удалить"
+                            aria-label="Удалить перевод"
+                        >
+                            <span class="material-icons" aria-hidden="true">delete</span>
+                        </a>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="expense-drill-hint">За {{ period.label }}</p>
+        {% else %}
+        <p class="project-empty-note">Переводов за {{ period.label }} пока нет</p>
+        {% endif %}
+    </section>
+</div>
+
+{% include "accaunting/partials/expense_create_modal.html" %}
+{% include "accaunting/partials/income_create_modal.html" %}
+{% include "accaunting/partials/wallet_create_modal.html" %}
+{% include "accaunting/partials/transfer_create_modal.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/expense_drilldown.js' %}" defer></script>
+<script src="{% static 'js/project_period.js' %}" defer></script>
 {% endblock %}
